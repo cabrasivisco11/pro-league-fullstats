@@ -1,0 +1,15 @@
+.DS_Store
+Thumbs.db
+.env*
+*.log
+*.bak
+*.zip
+*.exe
+*.dll
+*.rtsc
+*.rtmeta
+*.cs
+*.hkx
+node_modules/
+backups/
+private/
