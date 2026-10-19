@@ -1,36 +1,36 @@
-# Roteiro de demonstração — Pro League FullStats
+# 60-second gameplay demo plan — Pro League FullStats
 
-**Duração alvo:** aproximadamente 60 segundos. **Formato:** captura real de *Drunken Wrestlers 2* com a versão publicada do mod. Este documento é um plano de gravação; nenhum vídeo de gameplay foi produzido para este repositório.
+**Target length:** about 60 seconds. **Source:** actual *Drunken Wrestlers 2* gameplay using the published mod edition. This is a capture plan, not a completed demo. No simulated gameplay or altered match results should be presented as evidence.
 
-| Tempo | Cena real a capturar | Texto na tela ou narração sugerida |
+| Time | Footage to capture | Suggested caption or narration |
 | --- | --- | --- |
-| 0–5 s | Tela do jogo com o mod carregado e título discreto sobreposto na edição do vídeo. | “Pro League Rounds — Official Fullstats Edition. Base original de Nixagorn.” |
-| 5–12 s | Mostrar, em cortes curtos, os comandos e a abertura de Unranked, Ranked e Title Fight. Capturar cada modo de fato. | “Três formatos: 3 × 3, 3 × 5 e 5 × 5 minutos.” |
-| 12–20 s | Round em andamento, câmera fixa no HUD; destacar o relógio personalizado sem ocultar a jogabilidade. | “Cronômetro individual integrado ao HUD.” |
-| 20–28 s | Pontuação mudando durante uma ação real e placar visível. | “Pontos, vitórias de rounds e bônus.” |
-| 28–36 s | Fim de um round e painel de estatísticas durante o intervalo real de 30 s. Usar corte temporal identificado se condensar a espera. | “Resumo completo entre rounds; intervalo de 30 segundos.” |
-| 36–44 s | Pausar e retomar; mostrar relógio congelado. Se possível, registrar tentativa real de pontuação durante pausa e ausência de mudança. | “Pausa consistente entre relógio e pontuação.” |
-| 44–52 s | Uma partida que termine empatada; mostrar a decisão do anfitrião e o início real de um round extra de 1 min. | “Desempate por rounds e pontos, com round extra quando necessário.” |
-| 52–60 s | Tela de resultado final; terminar com URL curta da Workshop e crédito legível. | “Edição publicada na Steam Workshop. Original e correções: Nixagorn. FullStats e integração: PREGUIÇA, com assistência do Codex.” |
+| 0–5 s | The game with the mod loaded; add a restrained title during editing. | “Pro League Rounds — FullStats Edition. Built on Nixagorn's original mod.” |
+| 5–12 s | Short, genuine clips of starting Unranked, Ranked, and Title Fight. Capture each format separately. | “Three formats: 3 × 3, 3 × 5, and 5 × 5 minutes.” |
+| 12–20 s | An active round with the HUD visible and the custom timer readable. | “A dedicated timer for each round.” |
+| 20–28 s | A real scoring event and the visible scoreboard. | “Round scores, wins, and bonuses.” |
+| 28–36 s | Round end and the complete statistics display during the actual 30-second break. Label any shortened wait as a time cut. | “Full statistics between rounds.” |
+| 36–44 s | Pause and resume. Show the timer stopping; if practical, show that a real attempted scoring event does not change the score. | “Pause state keeps timing and scoring aligned.” |
+| 44–52 s | A genuinely tied match, the host's decision, and the start of a real 1-minute extra round. | “Tie-break decision and an optional extra round.” |
+| 52–60 s | Final result screen, Workshop link, and a readable credit line. | “Original mod and original pause/tie-break work: Nixagorn. FullStats edition and integration: PREGUIÇA. Development assisted by Codex.” |
 
-## Orientações de captura
+## Capture guidance
 
-1. **Confirmar a versão:** abrir o item publicado na [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3821094797) e gravar a versão instalada. Não misturar experimentos locais com a versão pública sem rotular claramente.
-2. **Preparar partidas reais:** gravar sessões separadas para os três modos, uma transição entre rounds, uma pausa e um empate. Se uma cena não puder ser reproduzida, retire-a do vídeo ou rotule-a como demonstração de outra versão; não fabrique o resultado.
-3. **Capturar tela e áudio:** gravar em 1080p ou na resolução disponível, com cursor fora do HUD, notificações privadas desativadas e volume do jogo controlado. Registrar data, versão e arquivos brutos fora deste repositório até revisar direitos.
-4. **Editar com cortes honestos:** cortes podem reduzir espera, mas marque “tempo condensado” quando uma contagem de 30 segundos for abreviada. Não altere placar, relógio ou resultado para simular funcionalidade.
-5. **Revisar privacidade e direitos:** ocultar nomes de jogadores, chat, Steam ID ou notificações sem consentimento. Usar apenas gameplay próprio ou autorizado, respeitando regras de uso do jogo e da plataforma. Não inserir capa ou arte de terceiros sem permissão.
-6. **Exportar:** gerar um vídeo principal de cerca de 60 s com legendas legíveis no celular e uma miniatura criada ou autorizada. Só depois da revisão, adicionar o arquivo ou um link público em [`media/pro-league/video/`](../media/pro-league/video/) e no README do projeto.
+1. **Confirm the version.** Capture the edition listed on the [Steam Workshop item](https://steamcommunity.com/sharedfiles/filedetails/?id=3821094797). Do not mix local experiments with the public release without a clear label.
+2. **Record real sessions.** Capture separate matches for the three formats, a round transition, pause, tie, and final result. If a scenario cannot be reproduced, omit it rather than fabricating footage.
+3. **Keep the HUD legible.** Record at 1080p when available, keep the cursor clear of the clock, and disable private notifications. Store raw footage outside this repository until rights and privacy are reviewed.
+4. **Edit honestly.** Short cuts can compress waiting time. Label a shortened 30-second break as “time condensed.” Do not alter the displayed clock, score, or winner to imply a feature worked.
+5. **Review privacy and rights.** Hide player names, chat, Steam IDs, and notifications unless their owners consent. Use only self-recorded or explicitly authorized footage, and review the game's and platform's applicable terms before publication.
+6. **Export for viewing.** Add readable captions for mobile viewers and an original or authorized thumbnail. After review, place the file or a public link in [`media/pro-league/video/`](../media/pro-league/video/) and update the repository README.
 
-## Lista mínima de tomadas
+## Minimum shot list
 
-- [ ] Unranked iniciado e relógio 03:00 visível.
-- [ ] Ranked iniciado e relógio 05:00 visível.
-- [ ] Title Fight iniciado e indicação de cinco rounds.
-- [ ] Pontos e bônus legíveis no painel entre rounds.
-- [ ] Intervalo real de 30 s; corte identificado se for abreviado.
-- [ ] Pausa e retomada, com relógio e pontuação observáveis.
-- [ ] Empate e decisão real por round extra ou empate declarado.
-- [ ] Resultado final e tela de créditos.
+- [ ] Unranked starts with a visible 03:00 round clock.
+- [ ] Ranked starts with a visible 05:00 round clock.
+- [ ] Title Fight starts with the five-round format visible.
+- [ ] Scores and bonuses are legible during a break.
+- [ ] The 30-second break is shown or clearly condensed.
+- [ ] Pause and resume are visible, including clock and scoring behavior.
+- [ ] A real tie leads to an extra round or declared draw.
+- [ ] The final result and credits are shown.
 
-**Estado do material:** ainda não há arquivos de gameplay neste repositório. A publicação da demonstração depende de captura real e revisão de direitos.
+**Current media status:** no gameplay files are included in this repository. The demo remains pending real capture and a rights review.

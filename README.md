@@ -1,53 +1,51 @@
-# Pro League Rounds — Official Fullstats Edition
+# Pro League Rounds — FullStats Edition
 
-Edição publicada para **Drunken Wrestlers 2** com relógio próprio no HUD, estatísticas completas entre rounds e integração de regras, pontuação, pausas e desempate. O projeto mostra trabalho com C#, Unity UI, depuração de scripts em um ambiente restrito e validação antes da publicação.
+A published *Drunken Wrestlers 2* mod edition that brings a per-round HUD timer, detailed match statistics, and coordinated round, scoring, pause, and tie-break flows. This repository documents the engineering work and its evidence. It does **not** contain the mod's code or game files.
 
-**[Ver o mod na Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3821094797)** · **[Ler o estudo de caso](docs/CASE_STUDY.md)** · **[Tecnologias e arquitetura](docs/TECH_STACK.md)**
+[View the published Steam Workshop item](https://steamcommunity.com/sharedfiles/filedetails/?id=3821094797) · [Read the technical case study](docs/CASE_STUDY.md) · [View the technology notes](docs/TECH_STACK.md)
 
-> **Autoria:** Pro League Rounds foi criado originalmente por **Nixagorn**. A Workshop também credita a ele a correção original de pausa e melhorias de desempate. A edição FullStats publicada por **PREGUIÇA** integra relógio personalizado, estatísticas, ajustes visuais e outras adaptações. O desenvolvimento contou com assistência do **Codex** para análise, geração/adaptação de código, depuração e documentação. Não reivindico autoria integral do mod nem implementação manual integral dos scripts.
+## Project overview
 
-## Visão rápida
+The project builds on **Nixagorn's original Pro League Rounds**. The Workshop credits Nixagorn for the original pause fix and tie-break improvements. **PREGUIÇA** published the FullStats edition, including the custom HUD timer, expanded statistics, visual adjustments, and integration work. **Codex assisted** with analysis, code generation or adaptation, debugging, and documentation. The work is not presented as a solo implementation or as entirely hand-written code.
 
-| Área | O que a edição apresenta |
+“Official Fullstats Edition” is part of the [Workshop item's title](https://steamcommunity.com/sharedfiles/filedetails/?id=3821094797); it does not imply endorsement by the game developer or by Nixagorn.
+
+## Key features
+
+| Area | Published behavior described on the Workshop item |
 | --- | --- |
-| Modos | Unranked: 3 rounds de 3 min; Ranked: 3 rounds de 5 min; Title Fight: 5 rounds de 5 min. |
-| Tempo | Cronômetro individual MM:SS integrado ao HUD e intervalo de 30 s entre rounds. |
-| Placar | Pontos, vitórias de rounds e bônus nas telas de estatísticas. |
-| Transições | Pausa do relógio, bloqueio de pontuação durante pausas e intervalos, decisão de empate e round extra de 1 min quando necessário. |
-| Publicação | Item público na Steam Workshop, com créditos e descrição das funcionalidades. |
+| Match formats | Unranked: three 3-minute rounds; Ranked: three 5-minute rounds; Title Fight: five 5-minute rounds. |
+| Timer and HUD | A dedicated MM:SS countdown for each round, integrated into the in-game HUD. |
+| Statistics | Round results, scores, and bonuses displayed during the 30-second break. |
+| Pause and scoring | The round timer pauses; knockdown scoring is blocked during pauses and breaks. |
+| Tie-break | Round wins take priority, then total points. If still tied, the host can start a 1-minute extra round or declare a draw. |
 
-## O problema técnico
+## Technologies
 
-O jogo mantém um tempo nativo de sala, enquanto o mod precisa controlar o tempo de cada round. A interface, a pontuação e o resultado também dependem do estado da partida. Durante a investigação, foi necessário distinguir relatos de falha, hipóteses de causa, erros de compilação e comportamento observado em jogo.
+**C#**, **Unity UI**, **DynamicCSharp/Battlehub**, the game's RPC interface, the **Steam Workshop**, and functional testing in the game's Mod Editor and runtime. [Technology and architecture notes](docs/TECH_STACK.md) explain what each component does and what was actually verified.
 
-Um exemplo concreto surgiu no painel FullStats: os textos completos de resultado desapareciam antes do fim do intervalo. A análise local identificou que a transição desabilitava esses textos e que uma rotina posterior os limpava. A solução experimental preservou os textos originais, capturou pontos e bônus antes do reset dos jogadores e sincronizou os dados entre anfitrião e cliente. O [estudo de caso](docs/CASE_STUDY.md) descreve a sequência e seus limites de validação.
+## Technical challenges
 
-## Como foi desenvolvido
+The game has a native room timer, while the mod needs a separate timer for each round. Scoring, the HUD, breaks, and results must respond to the same match state. In a FullStats experiment, the complete results panel disappeared before the break ended: the break transition disabled the original text elements, and a later routine cleared them. The investigation also had to distinguish external C# compilation from DynamicCSharp compilation and behavior in the game.
 
-```text
-Modo escolhido → relógio e round → apuração → intervalo → próximo round ou resultado
-                         └──────── pausa / pontuação / sincronização ────────┘
-```
+## Solutions and implementation
 
-Os componentes C# da cena cooperam para configurar a partida, sincronizar relógio e dados por RPC, bloquear pontos em estados inválidos e apresentar resultados em Unity UI. A verificação combinou leitura de scripts, comparação com os `CustomScript` embutidos na cena, compilação externa, logs do Battlehub/Mod Editor e testes funcionais. Compilação externa e mensagens `compiled OK` **não são tratadas como prova isolada de gameplay ou rede**.
+The timer, round manager, scoring component, HUD component, and results component work together through match state and RPC updates. The FullStats experiment captured scores and bonuses **before** player data was reset, synchronized that snapshot, and controlled the original results text throughout the break. Scoring checks pause and break state before accepting events. The [case study](docs/CASE_STUDY.md) explains the sequence, the tie-break integration, and the limits of each observation.
 
-## Demonstração e evidência
+## Testing and validation
 
-O [roteiro de vídeo de aproximadamente 60 segundos](docs/DEMO_SCRIPT.md) está pronto para capturar **gameplay real** dos três modos, relógio, estatísticas, intervalo, pausa, desempate e resultado. **Ainda não há vídeo, GIF ou screenshot neste repositório.** As pastas em [`media/pro-league/`](media/pro-league/README.md) receberão somente material próprio ou autorizado, com créditos registrados.
+The local record includes script inspection, comparison with code embedded in the scene, external compilation against installed game DLLs, Battlehub log analysis, and functional testing. Historical logs reported `compiled OK` for identified components, but those messages alone do not prove the final release's UI or online synchronization.
 
-A última versão publicada foi relatada como funcional nos testes pelo responsável pelo projeto. Este repositório não contém os logs ou a matriz dessa sessão final; por isso não apresenta números de usuários, downloads, cobertura de testes ou desempenho como resultados técnicos.
+The project owner reported that the latest published version worked in their tests. This repository does not contain that session's logs or test matrix, so it makes no claims about test coverage, performance, downloads, or user adoption.
 
-## Documentação
+## Demonstration
 
-- [Estudo de caso técnico](docs/CASE_STUDY.md): objetivos, problemas, soluções, depuração, validação e aprendizados.
-- [Tecnologias e arquitetura](docs/TECH_STACK.md): C#, Unity UI, DynamicCSharp/Battlehub, RPCs e processo de compilação.
-- [Roteiro de demonstração](docs/DEMO_SCRIPT.md): cenas e instruções para gravação real.
-- [Créditos e permissões de mídia](media/pro-league/credits.md): registro obrigatório antes de adicionar imagens ou vídeo.
+A [60-second capture plan](docs/DEMO_SCRIPT.md) covers all three modes, the timer, statistics, the break, pause, tie-break, and the final result. **No gameplay video, GIF, or screenshot is included yet.** The [media directories](media/pro-league/README.md) are reserved for original or authorized material with recorded credits.
 
-## Direitos
+## Credits and acknowledgments
 
-Este repositório contém **documentação**, não o mod. Não distribui scripts, cenas `.rtsc`, DLLs, executáveis, assets proprietários do jogo ou arquivos originais de Nixagorn. Nenhuma licença de código ou mídia de terceiros é concedida aqui. Nomes de jogos, ferramentas e franquias pertencem a seus titulares.
+- **Nixagorn:** original Pro League Rounds mod; original pause fix and tie-break improvements, as credited on the Workshop item.
+- **PREGUIÇA:** published FullStats edition, custom HUD timer, expanded statistics, visual adjustments, and integration work, as described on the Workshop item.
+- **Codex:** AI assistance with analysis, generated or adapted code, debugging, and documentation. This credit does not replace human review or testing.
 
-## English summary
-
-**Pro League Rounds — Official Fullstats Edition** is a published *Drunken Wrestlers 2* mod edition featuring a custom HUD timer, full round statistics, three match formats, pause and scoring integration, and tie-break handling. This repository documents the technical challenges, solutions, debugging and validation process. **Nixagorn** created the original mod and is credited for the original pause fix and tie-break improvements. The FullStats edition was published by **PREGUIÇA** with **Codex assistance**; no claim of sole or entirely manual authorship is made. [Read the case study](docs/CASE_STUDY.md).
+No original third-party scripts, scenes, game binaries, or proprietary assets are distributed here. No license to third-party code or media is granted by this repository.

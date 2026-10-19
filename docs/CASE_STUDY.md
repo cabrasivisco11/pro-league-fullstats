@@ -1,71 +1,73 @@
-# Estudo de caso — Pro League Rounds Fullstats Edition
+# Technical case study — Pro League Rounds FullStats Edition
 
-## 1. Objetivo
+## Objective and scope
 
-Evoluir um mod de rounds de Drunken Wrestlers 2 para apresentar regras de partida, cronômetro no HUD, estatísticas completas e desempate de modo consistente para os jogadores. O ponto de partida foi o projeto original de Nixagorn. O trabalho desta edição reuniu integrações, interface, depuração, testes e publicação, com assistência do Codex na análise e na geração ou adaptação de código.
+The FullStats edition extends **Nixagorn's original Pro League Rounds** for *Drunken Wrestlers 2*. The goal was to present consistent round timing, a readable HUD timer, detailed match statistics, and clear results across match modes. The work involved script integration, Unity UI, debugging, validation, and Steam Workshop release. Codex assisted with analysis, code generation or adaptation, and documentation.
 
-## 2. Problemas investigados
+The published item describes three formats: Unranked (three 3-minute rounds), Ranked (three 5-minute rounds), and Title Fight (five 5-minute rounds), with 30-second breaks. When a match remains tied, the host can choose a 1-minute extra round or declare a draw.
 
-- O fluxo de rounds precisava conviver com o tempo nativo da sala. Na investigação inicial, houve relato de reinício entre rounds, mas ele **não foi reproduzido naquela etapa**. O ciclo de vida da cena e o cronômetro nativo foram tratados como hipóteses de causa.
-- O estado de pausa precisava ser respeitado pelo relógio e pelo cálculo de pontos. Sem uma barreira única, uma pontuação poderia ser recebida enquanto a partida aparentava estar parada.
-- A versão original analisada não tinha uma regra explícita para empate final por pontos. A escolha do primeiro jogador da lista em um empate era um risco observado na leitura do código, não um resultado de partida medido.
-- O relógio precisava aparecer no HUD sem conflitar visualmente com componentes nativos.
-- Em um experimento FullStats, o painel de estatísticas completo desaparecia antes do fim do intervalo, embora um resumo simplificado permanecesse visível. O histórico local identificou duas causas no fluxo: `SetIntermission` desabilitava os textos originais e uma rotina os limpava cerca de 25 segundos depois de mostrá-los.
-- Mensagens do jogo e do Mod Editor podiam divergir. Uma compilação externa bem-sucedida não comprovava compilação interna, interação de UI ou sincronização online.
+## Problems investigated
 
-## 3. Solução e arquitetura
+1. **Two clocks, one match.** The game has a native room timer; the mod also needs a timer for each round. An early report described a reset between rounds, but that behavior was **not reproduced during the initial investigation**. Scene lifecycle and the native timer were hypotheses, not confirmed causes.
+2. **State shared by timing and scoring.** The pause state must stop the round clock and prevent scoring. Breaks must also block scoring, independently of what the HUD displays.
+3. **Results lost during a break.** In a FullStats experiment, the complete statistics panel disappeared before the break ended while a simplified summary remained. The local investigation found two contributing mechanisms: `SetIntermission` disabled the original result text, and the original results routine cleared it about 25 seconds after displaying it.
+4. **HUD compatibility.** The custom MM:SS clock needed a stable position and readable digits without disrupting the game's native HUD.
+5. **Tie resolution.** An early version of the original mod examined locally did not explicitly resolve a final tie by total points. That was a code-review finding, not a measured match outcome. Nixagorn's original pause fix and tie-break improvements remain credited; this edition documents their integration with FullStats.
+6. **Different compilation environments.** An external C# compiler can catch syntax and reference issues, but it cannot establish that DynamicCSharp/Battlehub will compile a scene or that the game will behave correctly.
 
-O fluxo foi organizado ao redor de estado de partida, round, pausa, intervalo e desempate:
+## Architecture and implementation
 
 ```text
-Seleção de modo → contagem inicial → round e relógio → apuração
-                                            ↓
-                 resultado ← desempate ← intervalo / próximo round
+Host selects a mode → countdown → round timer → round results
+                                           ├→ break → next round
+                                           └→ tie decision → extra round or draw
 ```
 
-O `TimeManager_PL` escolhe o formato da partida e coordena o relógio, RPCs e transições. `RoundManager` guarda configuração e vitórias. `PointsManager_PL` filtra pontos em pausa e intervalo. `ShowControls_PL` monta placar e relógio no HUD. `PLShowWinner` apresenta estatísticas e decisões de desempate. Os scripts ficam embutidos na cena do Mod Editor; a descrição aqui é arquitetural, sem redistribuir seu conteúdo.
+The main responsibilities observed in the local working copy were:
 
-Os formatos são Unranked (3 × 3 minutos), Ranked (3 × 5 minutos) e Title Fight (5 × 5 minutos), com intervalos de 30 segundos. Em empate persistente, o fluxo prevê round extra de 1 minuto.
+| Component | Responsibility |
+| --- | --- |
+| `TimeManager_PL` | Match configuration, clock, pause state, transitions, and RPC synchronization. |
+| `RoundManager` | Round duration, current round, wins, and match state. |
+| `PointsManager_PL` | Points and bonuses; rejects scoring while paused or between rounds. |
+| `ShowControls_PL` | On-screen controls, scoreboard, and per-round clock. |
+| `PLShowWinner` | Round statistics, final results, and tie decision display. |
 
-## 4. Dificuldades técnicas e depuração
+The host sends remaining round time to clients, and Unity UI displays it on the HUD. `PointsManager_PL` checks `MatchPaused` and `IsIntermission` before accepting points. During the FullStats break experiment, names, round scores, wins, and bonus text were captured before player data was reset; an RPC sent that snapshot to clients. The original result text was kept visible for the intended part of the break and cleared before the next round.
 
-**Relógio e estado.** O projeto tem o tempo do round e o tempo da sala como conceitos distintos. A investigação conferiu quando cada um é iniciado, pausado, sincronizado e encerrado. Na implementação observada, o tempo restante é enviado aos clientes e a UI usa esse valor para o relógio do HUD.
+The FullStats panel work was first documented for the three-round modes and then extended to Title Fight in a later AllModes experiment. The later log alone did not establish that the five-round mode looked correct or completed correctly in gameplay.
 
-**Pausa e pontuação.** O filtro de pontos consulta o estado `MatchPaused` e `IsIntermission`. Isso liga a regra de pontuação ao estado de partida, em vez de depender só de uma indicação visual.
+## Debugging and compatibility work
 
-**Empate.** A análise do mod original identificou ausência de desempate explícito em um resultado final empatado. A edição inclui estado de decisão, apresentação ao anfitrião e round extra. A contribuição de Nixagorn nesse fluxo é creditada.
+**Timer and UI.** The investigation traced when the room timer and round timer start, pause, synchronize, and end. HUD work examined the game's existing `UnityEngine.UI.Text` component and layout behavior. External compilation was paired with in-editor and in-game checks because static code inspection could not prove the final appearance.
 
-**Estatísticas no intervalo.** O experimento FullStats preservou os textos originais de resultado e capturou nomes, pontos, vitórias e bônus antes do reset dos jogadores. O anfitrião enviava esses dados aos clientes por RPC. A visibilidade do painel era controlada durante o intervalo, com limpeza antes do round seguinte. Essa solução foi ampliada para Title Fight em um experimento posterior AllModes; o registro dessa etapa não bastava sozinho para afirmar validação funcional do modo de cinco rounds.
+**DynamicCSharp/Battlehub.** The scene stores code in `CustomScript` components. One historical compatibility pass avoided direct `DW2.` namespace references and UI symbols that were problematic in that environment, including `TextAnchor`, `FontStyle.Bold`, and `HorizontalWrapMode`. Long scripts also created a risk of truncation when pasted into an editor field, so experiments compared readable scripts with the code embedded in a working scene copy.
 
-**Interface.** Ajustes de posicionamento e compatibilidade do texto do relógio foram feitos dentro das restrições de Unity UI e do ambiente de scripts do jogo. A verificação por código foi complementada por inspeção no editor e testes funcionais.
+**Logs.** A historical pre-publication check compiled six scripts externally with `csc.exe` against installed game DLLs, returning exit code 0 with two pre-existing warnings. The Battlehub log showed `compiled OK` for five named components; `PointsManager_PL` was embedded and passed external compilation but had no individual log confirmation in that check. A requested recompile also logged two `Type mismatch!` messages without a C# compiler error. A later AllModes experiment logged six scripts as `compiled OK` and `GameStarted()` without a C# error, but its log did not name the selected scene. These are specific observations, not proof that every published behavior passed.
 
-**Compilação em dois ambientes.** Um registro local anterior documenta compilação externa com `csc.exe` e DLLs locais, sem erro, além de `compiled OK` no log do Battlehub para cinco scripts. `PointsManager_PL` estava embutido e compilava externamente, mas não tinha confirmação individual no log. O registro anotou avisos de compilação e mensagens `Type mismatch!` sem erro CS. Esse nível de detalhe impediu tratar um sinal parcial como aprovação completa do mod.
+**Version safety.** Working copies and backups preserved previous scene states. Script text was compared with the scene's embedded `CustomScript` fields, and Battlehub metadata was checked in the local process. No scene, script, or game asset is redistributed in this repository.
 
-**DynamicCSharp e componentes embutidos.** A cena usa `CustomScript` do Battlehub. Uma etapa de depuração evitou referências diretas ao namespace `DW2.` e símbolos de UI incompatíveis naquele ambiente, como `TextAnchor`, `FontStyle.Bold` e `HorizontalWrapMode`. Scripts longos traziam risco de truncamento na colagem do editor; os experimentos compararam o texto C# embutido na cena com os arquivos legíveis da cópia de trabalho. Um log posterior do experimento AllModes registrou seis scripts como `compiled OK` e `GameStarted()`, mas não identificava nominalmente a cena selecionada. Por isso o teste visual e funcional continuou necessário.
+## Validation and outcome
 
-## 5. Versionamento, validação e publicação
+The process separated four questions: does the C# compile externally; does Battlehub compile the scene; does the UI and match flow work in the game; and do host and client receive consistent state? Passing one stage did not imply passing the next.
 
-Foram usadas cópias de trabalho e backups antes de ajustes de cena e scripts. O material local registra comparação entre textos dos scripts e os CustomScripts embutidos na cena, além de verificação de arquivos de metadados do Battlehub. O processo separou testes de sintaxe, compilação no editor, interação em jogo e publicação na Workshop.
+The project owner reported that the latest version [published on Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3821094797) worked in their tests. This repository does not include the final session's raw logs, screenshots, or test matrix. It therefore makes no quantitative claims about test coverage, performance, users, or downloads. The [demo plan](DEMO_SCRIPT.md) lists the real gameplay evidence still to capture for this repository.
 
-O responsável pelo projeto informou que a última versão publicada funcionou corretamente nos testes realizados. O item público é [Pro League Rounds — Official Fullstats Edition](https://steamcommunity.com/sharedfiles/filedetails/?id=3821094797). Como não há neste repositório uma captura de logs e critérios da sessão final, o resultado é descrito como relato do responsável, sem percentuais de cobertura, número de usuários ou outras métricas. O [roteiro de demonstração](DEMO_SCRIPT.md) especifica quais funcionalidades ainda precisam ser captadas em gameplay real para este repositório.
-
-### Evidências e o que elas permitem afirmar
-
-| Fonte | Observação sustentada | Limite |
+| Evidence source | What it supports | Limit |
 | --- | --- | --- |
-| Scripts e documentação locais da cópia de trabalho | Estrutura entre gerenciadores, relógio, pontuação, UI e desempate. | Leitura de código não equivale a partida testada. |
-| Registros de compilação externa e log Battlehub de etapas históricas | Ausência de erros C# em compilações específicas; mensagens `compiled OK` para componentes identificados. | Não são prova isolada da versão final, da UI ou da rede. |
-| Relato do responsável pelo projeto | A última versão publicada funcionou corretamente nos testes realizados. | Não fornece matriz, logs ou números de desempenho neste repositório. |
-| [Item público na Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3821094797) | Título, publicação, funcionalidades descritas e créditos públicos. | Descrição da Workshop não substitui inspeção técnica independente. |
+| Local working-copy scripts and notes | Component responsibilities and implemented control paths. | Reading code is not a gameplay test. |
+| Historical compiler and Battlehub logs | Specific successful compilations and recorded warnings. | They do not independently validate the final release or online play. |
+| Project owner's test report | The latest published version worked in their tests. | No final-session log or complete test matrix is included here. |
+| [Steam Workshop item](https://steamcommunity.com/sharedfiles/filedetails/?id=3821094797) | Public title, feature description, publication, and credits. | A listing is not an independent technical test. |
 
-## 6. Aprendizados
+## Lessons
 
-1. Diferenciar um relato de bug, uma hipótese de causa e uma falha reproduzida evita mudanças baseadas em suposição.
-2. Quando UI, pontuação e relógio dependem do mesmo estado, as transições precisam ser examinadas como um fluxo único.
-3. Compilar externamente é útil, mas o ambiente do jogo e o teste funcional continuam necessários.
-4. Backups e comparações de versão ajudam a localizar regressões e preservam uma rota de recuperação.
-5. Créditos claros são parte da documentação técnica quando um projeto deriva do trabalho de outra pessoa.
+- Keep a reported bug, a suspected cause, and a reproduced failure distinct.
+- Treat timing, scoring, HUD, and transitions as one shared-state flow.
+- Use external compilation for fast feedback, then verify inside the game's script runtime and in actual matches.
+- Preserve recoverable working states and document what each test did and did not establish.
+- Make authorship and third-party rights explicit when extending an existing mod.
 
-## Créditos e limites
+## Credits and rights
 
-Projeto original, correção original de pausa e melhorias de desempate: **Nixagorn**, conforme os créditos da Workshop. Edição FullStats: integração, relógio personalizado no HUD, estatísticas, ajustes visuais, depuração e publicação documentados neste portfólio. O desenvolvimento contou com **assistência do Codex**; trechos gerados ou adaptados com IA não são apresentados como código escrito integralmente à mão. Este estudo não inclui código, assets, cenas ou arquivos do jogo e não atribui licença a material de terceiros.
+The original mod, original pause fix, and tie-break improvements are credited to **Nixagorn** on the Workshop item. The published FullStats edition credits **PREGUIÇA** for the custom HUD timer, statistics, visual adjustments, and integration. **Codex assisted** with analysis, generated or adapted code, debugging, and documentation. This case study does not claim sole or entirely manual authorship and does not grant a license to third-party code or assets.

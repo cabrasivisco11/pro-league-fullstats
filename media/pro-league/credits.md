@@ -1,9 +1,9 @@
-# Créditos e permissões de mídia
+# Media credits and permissions
 
-Preencha **uma linha por arquivo** antes de adicioná-lo ao repositório.
+Add **one row per file** before including it in the repository.
 
-| Arquivo | Tipo | Autor da captura/arte | Origem e data | Permissão de uso/publicação | Pessoas ou dados identificáveis revisados? |
+| File | Type | Capture or artwork creator | Source and date | Permission to publish | Identifiable people or data reviewed? |
 | --- | --- | --- | --- | --- | --- |
-| _Nenhum arquivo adicionado_ | — | — | — | — | — |
+| _No media added_ | — | — | — | — | — |
 
-Guarde a comprovação de permissão fora do repositório se ela contiver mensagens privadas ou dados pessoais. Não transforme ausência de objeção em autorização.
+Keep permission records outside the repository if they contain private messages or personal information. A lack of objection is not permission.

@@ -1,14 +1,14 @@
-# Mídia do Pro League
+# Pro League media
 
-Pastas reservadas para uma demonstração **real e autorizada**:
+These directories are reserved for **real, authorized** demonstration material:
 
-| Pasta | Material esperado |
+| Directory | Intended content |
 | --- | --- |
-| `screenshots/` | Capturas próprias do jogo, com HUD e funcionalidades legíveis. |
-| `gifs/` | Trechos curtos extraídos das gravações próprias. |
-| `video/` | Demonstração de cerca de 60 segundos ou arquivo de instruções com link público. |
-| `cover/` | Capa criada para o portfólio ou reutilizada com permissão documentada. |
+| `screenshots/` | Original gameplay captures with a readable HUD and feature context. |
+| `gifs/` | Short clips derived from authorized recordings. |
+| `video/` | The approximately 60-second demo or a file linking to an approved public video. |
+| `cover/` | An original cover image or one reused with documented permission. |
 
-Registre origem, autor, permissão e data em [`credits.md`](credits.md) **antes** de adicionar ou referenciar cada arquivo. Use nomes descritivos, comprima a mídia para carregamento rápido e escreva texto alternativo quando a imagem aparecer no site ou no GitHub. O [roteiro de captura](../../docs/DEMO_SCRIPT.md) especifica as cenas e os cuidados de edição.
+Before adding or linking any file, record its source, creator, permission, and date in [`credits.md`](credits.md). Use descriptive filenames, compress media for fast loading, and provide alternative text when images appear in GitHub documentation. The [demo plan](../../docs/DEMO_SCRIPT.md) lists the footage and editing requirements.
 
-Não copie capa, cena, assets ou código do pacote original da Workshop. Arquivos do jogo e material de terceiros dependem de autorização específica. Os diretórios estão vazios nesta preparação.
+Do not copy the Workshop cover, original scene, assets, or code without permission. Game files and third-party material require a separate rights review. These directories contain no media yet.

@@ -1,46 +1,46 @@
-# Tecnologias e arquitetura — Pro League FullStats
+# Technology and architecture — Pro League FullStats
 
-Esta página descreve **o papel observado** de cada tecnologia na edição FullStats. O código-fonte do mod e as cenas do jogo não são distribuídos aqui.
+This document describes the **observed role** of each technology in the FullStats edition. It does not distribute the mod's source code, scene, or game files.
 
-| Tecnologia ou ferramenta | Uso no projeto | Limite da evidência |
+| Technology or tool | Role in the project | Evidence boundary |
 | --- | --- | --- |
-| C# | Regras de partida, relógio, estado de pausa, pontuação e apresentação de resultados. | Scripts locais foram inspecionados, sem serem copiados para este repositório. |
-| Unity / Unity UI | `Canvas`, `Text` e `RectTransform` usados pelo HUD, placar, relógio e telas de resultado. | A análise estática mostra as integrações; a aparência final exige captura do jogo. |
-| DynamicCSharp / Battlehub | `CustomScript` embutidos na cena e compilação pelo Mod Editor; serialização da cena e metadados pelo Battlehub RTSaveLoad. | Compilar externamente não substitui a compilação e execução no editor. |
-| RPCs do jogo | O anfitrião sincroniza configuração, relógio, pontos, estatísticas e transições de round com os clientes. | A presença das chamadas não é prova isolada da qualidade da sincronização online. |
-| Steam Workshop | Distribuição da edição publicada. | O [item público](https://steamcommunity.com/sharedfiles/filedetails/?id=3821094797) confirma título, publicação e créditos; métricas de uso não são apresentadas como resultado do projeto. |
-| Git, cópias de trabalho e backups | Controle desta documentação e preservação de estados durante a investigação do mod. | Os backups do mod ficam fora deste repositório. |
-| Codex | Assistência para análise, geração/adaptação de código, documentação e depuração. | Atribuição explícita; não há alegação de implementação manual integral. |
+| C# | Match rules, timing, pause state, scoring, and result presentation. | Local working-copy scripts were inspected but are not included here. |
+| Unity / Unity UI | `Canvas`, `Text`, and `RectTransform` elements for the HUD clock, scoreboard, break display, and results. | Static inspection shows integration points; gameplay capture is needed to demonstrate appearance. |
+| DynamicCSharp / Battlehub | Compilation of scene-embedded `CustomScript` components in the Mod Editor; scene and metadata serialization through Battlehub RTSaveLoad. | External compilation does not replace compilation or execution in the editor. |
+| Game RPC interface | The host synchronizes configuration, time, points, statistics, and round transitions with clients. | The calls' presence does not by itself prove online synchronization quality. |
+| Steam Workshop | Distribution of the published edition. | The [public item](https://steamcommunity.com/sharedfiles/filedetails/?id=3821094797) confirms its title, description, and credits, not performance outcomes. |
+| Git, working copies, and backups | Version control for this documentation and recoverable states during mod investigation. | Mod backups remain outside this repository. |
+| Codex | Assistance with analysis, code generation or adaptation, debugging, and documentation. | Credited explicitly; the work is not described as entirely hand-written. |
 
-## Fluxo entre componentes
+## Component flow
 
 ```text
-Seleção do modo pelo anfitrião
-  └─ TimeManager_PL: configuração, relógio, pausa e RPCs
-       ├─ RoundManager: round atual, duração e vitórias
-       ├─ PointsManager_PL: pontos e bloqueio em pausa/intervalo
-       ├─ ShowControls_PL: placar, relógio e contagem do intervalo
-       └─ PLShowWinner: estatísticas, resultado e decisão de empate
+Host selects match format
+  └─ TimeManager_PL: configuration, clock, pause, transitions, RPCs
+       ├─ RoundManager: current round, duration, wins
+       ├─ PointsManager_PL: scores and pause/break guard
+       ├─ ShowControls_PL: scoreboard, timer, break countdown
+       └─ PLShowWinner: statistics, final result, tie decision
 ```
 
-O relógio do round é diferente do tempo nativo da sala. A edição sincroniza os segundos restantes e os apresenta no HUD. `PointsManager_PL` consulta o estado de partida, pausa e intervalo antes de aceitar eventos de pontuação. Na apuração, dados de estatísticas são capturados antes da redefinição de jogadores para que o painel entre rounds não perca pontos e bônus.
+The round clock is separate from the game's native room timer. The edition sends the remaining round time to clients and displays it in the HUD. `PointsManager_PL` checks match, pause, and break state before accepting scoring events. At round end, statistics are captured before player data is reset so the between-round display retains scores and bonuses.
 
-## Compilação e restrições do ambiente
+## Compilation and runtime constraints
 
-Os registros locais mostram dois tipos de verificação:
+The local record distinguishes two checks:
 
-1. **Compilação externa:** C# compilado com `csc.exe` contra DLLs instaladas do jogo. Uma etapa histórica terminou com código de saída 0 e dois avisos preexistentes.
-2. **Compilação interna:** logs do Battlehub/Mod Editor registraram `compiled OK`. Um registro inicial confirmou cinco scripts individualmente; em um experimento posterior de FullStats AllModes, o log registrou os seis scripts e `GameStarted()` sem erro CS. Esse log posterior não identificava nominalmente a cena selecionada, então não serve sozinho como confirmação visual ou funcional do Title Fight.
+1. **External compilation:** C# compiled with `csc.exe` against installed *Drunken Wrestlers 2* DLLs. A historical check returned exit code 0 with two pre-existing warnings.
+2. **Battlehub compilation:** Mod Editor logs recorded `compiled OK` for five scripts in an earlier check. A later FullStats AllModes experiment logged all six and `GameStarted()` without a C# error. That later log did not identify the selected scene, so it could not independently confirm the Title Fight UI or match flow.
 
-Alguns símbolos de UI, incluindo `TextAnchor`, `FontStyle.Bold` e `HorizontalWrapMode`, causaram incompatibilidade em uma etapa de teste. O conjunto validado externamente evitou esses símbolos e referências diretas ao namespace `DW2.`. Também havia risco de truncamento ao colar scripts longos no campo `CustomScript`; por isso os experimentos verificaram o texto embutido na cópia da cena. Mensagens `Type mismatch!` apareceram em uma recompilação histórica sem erro CS. Esses sinais foram registrados, não tratados como prova automática de falha ou sucesso em jogo.
+In one compatibility pass, UI symbols including `TextAnchor`, `FontStyle.Bold`, and `HorizontalWrapMode` were avoided, as were direct `DW2.` namespace references. Long scripts also risked truncation when pasted into a `CustomScript` field, so experiments verified code embedded in a scene copy. A historical recompile produced `Type mismatch!` messages without a C# error. Those messages were recorded rather than treated as automatic proof of either failure or success in gameplay.
 
-## Estratégia de depuração
+## Debugging method
 
-- Inspecionar o fluxo da cena e distinguir tempo de sala de tempo do round.
-- Comparar scripts legíveis com o texto embutido na cena de trabalho.
-- Compilar externamente para detectar sintaxe e referências indisponíveis.
-- Abrir a cópia no Mod Editor, ler logs e conferir UI e transições em jogo.
-- Testar anfitrião e cliente para pontos, bônus, relógio, pausa e mudança de round.
-- Preservar backups antes de cada alteração e documentar o que foi efetivamente observado.
+1. Trace the room timer and round timer as separate systems.
+2. Compare readable scripts with code embedded in the working scene.
+3. Compile externally to catch syntax and unavailable references.
+4. Open the scene in the Mod Editor, inspect logs, and check HUD and transitions in the game.
+5. Test host and client behavior for scores, bonuses, timing, pauses, and round changes.
+6. Preserve backups before changes and record which observations each test supports.
 
-Veja [o estudo de caso](CASE_STUDY.md) para problemas, decisões e resultados. Os detalhes de implementação são descritos sem publicar código ou assets de terceiros.
+The [technical case study](CASE_STUDY.md) covers the problems, implementation, and validation limits in more detail.
