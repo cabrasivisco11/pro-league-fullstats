@@ -1,6 +1,6 @@
 # 60-second gameplay demo plan — Pro League FullStats
 
-**Target length:** about 60 seconds. **Source:** actual *Drunken Wrestlers 2* gameplay using the published mod edition. This is a capture plan, not a completed demo. No simulated gameplay or altered match results should be presented as evidence.
+**Target length:** about 60 seconds. **Source:** actual *Drunken Wrestlers 2* gameplay using the published mod edition. This is the original capture plan; an edited [60-second demo](../media/pro-league/video/pro-league-fullstats-demo-60s.mp4) is now published. No simulated gameplay or altered match results should be presented as evidence.
 
 | Time | Footage to capture | Suggested caption or narration |
 | --- | --- | --- |
@@ -33,4 +33,4 @@
 - [ ] A real tie leads to an extra round or declared draw.
 - [ ] The final result and credits are shown.
 
-**Current media status:** no gameplay files are included in this repository. The demo remains pending real capture and a rights review.
+**Current media status:** the approved demo and a stylized promotional thumbnail are published. The video shows Unranked and Title Fight, but not Ranked or tie-break scenarios. The remaining checklist describes possible additions to a fuller demonstration.

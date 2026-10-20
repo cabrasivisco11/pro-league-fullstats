@@ -11,4 +11,4 @@ These directories are reserved for **real, authorized** demonstration material:
 
 Before adding or linking any file, record its source, creator, permission, and date in [`credits.md`](credits.md). Use descriptive filenames, compress media for fast loading, and provide alternative text when images appear in GitHub documentation. The [demo plan](../../docs/DEMO_SCRIPT.md) lists the footage and editing requirements.
 
-Do not copy the Workshop cover, original scene, assets, or code without permission. Game files and third-party material require a separate rights review. These directories contain no media yet.
+Do not copy the Workshop cover, original scene, assets, or code without permission. Game files and third-party material require a separate rights review. The `video/` directory contains the approved gameplay demo and its stylized promotional thumbnail; the other media directories remain empty.
