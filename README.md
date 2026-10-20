@@ -40,7 +40,15 @@ The project owner reported that the latest published version worked in their tes
 
 ## Demonstration
 
-A [60-second capture plan](docs/DEMO_SCRIPT.md) covers all three modes, the timer, statistics, the break, pause, tie-break, and the final result. **No gameplay video, GIF, or screenshot is included yet.** The [media directories](media/pro-league/README.md) are reserved for original or authorized material with recorded credits.
+[![Pro League Rounds — FullStats Edition: stylized promotional cover](media/pro-league/video/pro-league-fullstats-demo-thumbnail.png)](media/pro-league/video/pro-league-fullstats-demo-60s.mp4)
+
+**[Watch the 60-second gameplay demo (MP4, approx. 27 MB)](media/pro-league/video/pro-league-fullstats-demo-60s.mp4)**
+
+This short showcase is edited from **real Drunken Wrestlers 2 gameplay** of the published FullStats edition. It highlights the Unranked and Title Fight modes, the custom per-round HUD timer, FullStats panels, round breaks, pause/resume, and transitions between rounds. The edited sequences are not a single uninterrupted match or evidence of frame-perfect network synchronization. Ranked and tie-break scenarios are **not shown** in this video.
+
+The music is an original instrumental track created for the demo. The cover image is **stylized promotional artwork inspired by the recorded gameplay**, not a raw gameplay screenshot. Credits: the original Pro League Rounds mod, Pause Fix, and Tie Break are by **Nixagorn**; FullStats edition integration and testing by **PREGUIÇA**, with Codex/AI-assisted implementation. This project is not an official endorsement from the original author or the game's developer.
+
+The [60-second capture plan](docs/DEMO_SCRIPT.md) records the intended shot list, including scenarios not shown in this edit. The [media directories](media/pro-league/README.md) explain how to add further authorized material with recorded credits.
 
 ## Credits and acknowledgments
 
